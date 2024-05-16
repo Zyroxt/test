@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candy Crush</title>
+    <style>
+        /* CSS styles to make the app look beautiful */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+       .game-board {
+            width: 400px;
+            height: 400px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-gap: 10px;
+        }
+       .candy {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+       .candy:hover {
+            transform: scale(1.1);
+        }
+       .candy:active {
+            transform: scale(0.9);
+        }
+       .score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Candy Crush</h1>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="game-board">
+        <!-- candies will be generated dynamically using JavaScript -->
+    </div>
+
+    <script>
+        // JavaScript code to make the app work well
+        let score = 0;
+        const gameBoard = document.querySelector('.game-board');
+        const scoreElement = document.querySelector('#score');
+
+        // generate candies
+        for (let i = 0; i < 64; i++) {
+            const candy = document.createElement('div');
+            candy.className = 'candy';
+            candy.textContent = getRandomCandyType();
+            gameBoard.appendChild(candy);
+        }
+
+        // add event listener to candies
+        gameBoard.addEventListener('click', (e) => {
+            if (e.target.classList.contains('candy')) {
+                const candy = e.target;
+                const candyType = candy.textContent;
+                const adjacentCandies = getAdjacentCandies(candy);
+                if (adjacentCandies.length >= 3) {
+                    // remove candies
+                    adjacentCandies.forEach((candy) => candy.remove());
+                    // update score
+                    score += adjacentCandies.length;
+                    scoreElement.textContent = score;
+                }
+            }
+        });
+
+        // helper functions
+        function getRandomCandyType() {
+            const candyTypes = ['🍭', '🍬', '🎂', '🍫', '🍮'];
+            return candyTypes[Math.floor(Math.random() * candyTypes.length)];
+        }
+
+        function getAdjacentCandies(candy) {
+            const adjacentCandies = [];
+            const candyIndex = Array.prototype.indexOf.call(gameBoard.children, candy);
+            const row = Math.floor(candyIndex / 8);
+            const col = candyIndex % 8;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    const adjacentIndex = candyIndex + i * 8 + j;
+                    if (adjacentIndex >= 0 && adjacentIndex < 64) {
+                        const adjacentCandy = gameBoard.children[adjacentIndex];
+                        if (adjacentCandy.textContent === candy.textContent) {
+                            adjacentCandies.push(adjacentCandy);
+                        }
+                    }
+                }
+            }
+            return adjacentCandies;
+        }
+    </script>
+</body>
+</html>
